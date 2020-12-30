@@ -98,7 +98,7 @@ class mongoprefix {
   * @param {string} [guildId] - Discord guild id.
   */
 
-  static async fetch(userId, guildId) {
+  static async fetch(client, guildId) {
     if (!client) throw new TypeError("An client was not provided.");
     if (!guildId) throw new TypeError("A guild id was not provided.");
     if(!client.prefix.has(guildId)){
