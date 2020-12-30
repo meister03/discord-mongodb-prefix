@@ -1,0 +1,33 @@
+{
+  "name": "mongodb-prefix",
+  "version": "1.0.0",
+  "description": "A lightweight and easy to use db managing package to save prefixes",
+  "main": "index.js",
+  "dependencies": {
+    "mongoose": "^5.7.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meister03/discord-mongodb-prefix.git"
+  },
+  "keywords": [
+    "discord",
+    "discord.js",
+    "bot",
+    "bots",
+    "discord-prefix",
+    "prefix",
+    "mongo",
+    "mongoose",
+    "mongodb",
+    "manage-prefix",
+    "framework"
+  ],
+  "author": "meister03",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meister03/discord-mongodb-prefix/issues"
+  },
+  "homepage": "https://github.com/meister03/discord-mongodb-prefix#readme"
+}
