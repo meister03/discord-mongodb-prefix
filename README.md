@@ -76,7 +76,7 @@ mongopref.createGuild(client,message.guild.id); /// you can also give a another 
 ```
 - Output:
 ```
-Promise<Object>
+Promise<Object>git
 ```
 **deleteServer**
 
