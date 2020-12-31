@@ -3,13 +3,7 @@
 
 # Discord-Mongodb-Prefix
 A lightweight managing package to save custom prefix in db. Intelligent saving ways to lower traffic up to 90%.
-
-
-# Bugs, Glitches and Issues
-If you encounter any problems fell free to open an issue in our <a href="https://github.com/meister03/discord-mongodb-prefix/issues">github repository or join the discord server.</a>.
-
-# Help
-If you need help feel free to join our <a href="https://discord.gg/YTdNBHh ">discord server</a>.We will provied you all help :).
+**If you need help feel free to join our <a href="https://discord.gg/YTdNBHh ">discord server</a>.We will provied you all help ☺**
 # Download
 You can download it from npm:
 ```cli
@@ -62,7 +56,10 @@ await mongopref.changeprefix(client, message.guild.id, newprefix); // this will 
 message.channel.send(`**Successfully change prefix from ${fetchprefix.prefix} to ${newprefix}**`)
 }
 ```
-# Whoö
+# Whole code
+```js
+Whole code
+```
 
 *Is time for you to use the code creative..*
 
@@ -73,18 +70,14 @@ Creates an entry in database for that Server if it doesnt exist.
 ```js
 mongopref.createGuild(client,message.guild.id); /// you can also give a another guild id
 ```
-- Output:
-```
-Promise<Object>git
-```
 **deleteServer**
 
 If the entry exists, it deletes it from database.
 ```js
 mongopref.deleteGuild(message.guild.id); /// you can also give a another guild id
 ```
-- Output:
-```
-Promise<Object>
-```
+
 *Have fun and feel free to contribute/suggest or contact me on my discord server or per dm on Meister#9667*
+
+# Bugs, Glitches and Issues
+If you encounter any problems fell free to open an issue in our <a href="https://github.com/meister03/discord-mongodb-prefix/issues">github repository or join the discord server.</a>.
