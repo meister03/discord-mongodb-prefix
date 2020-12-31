@@ -14,10 +14,11 @@ If you need help feel free to join our <a href="https://discord.gg/YTdNBHh ">dis
 You can download it from npm:
 ```cli
 npm i mongodb-prefix
+npm i mongoose
 ```
 
 # Setting Up
-First things first, we include the module into the project(into your main bot file).
+First we include the module into the project(into your main bot file).
 ```js
 const mongopref = require("mongodb-prefix");
 client.prefix = new Map();  // do not rename here something, or else Dx
@@ -28,13 +29,9 @@ mongopref.setURL("mongodb://..."); //builts a connection with the db
 client.defaultprefix = "Your default Prefix" ; // save here your default prefix
 ```
 
-# Examples
-*Examples assume that you have setted up the module as presented in 'Setting Up' section.*
+# Fetching the Prefix
+
 *Following examples assume that your `Discord.Client` is called `client`.*
-
-*Following examples assume that your `client.on("message", async message` is called `message`. Do not forget the `async` , because we have to await*
-
-- **Fetching the Prefix**
 
 ```js
 client.on("message", async (message) => {
@@ -56,7 +53,7 @@ client.on("message", async (message) => {
   const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
 ```
-- **Change prefix**
+# Change prefix
 
 ```js
 if(command === "changeprefix"){ /// you can use your command handler to, but look that you overgive the parameters client, message
@@ -65,6 +62,8 @@ await mongopref.changeprefix(client, message.guild.id, newprefix); // this will 
 message.channel.send(`**Successfully change prefix from ${fetchprefix.prefix} to ${newprefix}**`)
 }
 ```
+# Whoö
+
 *Is time for you to use the code creative..*
 
 # Methods
