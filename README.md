@@ -37,6 +37,7 @@ client.on("message", async (message) => {
   console.log(fetchprefix.prefix) /// will log out the prefix
 .........
 ```
+
 *The Code below will split the given prefix from the message*
 ```js
   const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');   //// the bot will react to on mention prefix 
@@ -66,11 +67,13 @@ Whole code
 
 # Methods
 **createServer**
+
 Creates an entry in database for that Server if it doesnt exist.
 ```js
 mongopref.createGuild(client,message.guild.id); /// you can also give a another guild id
 ```
 **deleteServer**
+
 If the entry exists, it deletes it from database.
 ```js
 mongopref.deleteGuild(message.guild.id); /// you can also give a another guild id
