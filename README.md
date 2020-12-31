@@ -4,7 +4,7 @@
 # Discord-Mongodb-Prefix
 A lightweight managing package to save custom prefix in db. Intelligent saving ways to lower traffic up to 90%.
 
-**If you need help feel free to join our <a href="https://discord.gg/YTdNBHh ">discord server</a>.We will provied you all help ☺**
+**If you need help feel free to join our <a href="https://discord.gg/YTdNBHh ">discord server</a>. We will provied you all help ☺**
 # Download
 You can download it from npm:
 ```cli
