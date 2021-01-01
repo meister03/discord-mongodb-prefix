@@ -78,7 +78,11 @@ If the entry exists, it deletes it from database.
 ```js
 mongopref.deleteGuild(message.guild.id); /// you can also give a another guild id
 ```
-
+# For Advanced Coders
+**This code will use the mention prefix of the bot or the custom prefix**
+```js
+Cide
+```
 **Have fun and feel free to contribute/suggest or contact me on my discord server or per dm on Meister#9667**
 
 # Bugs, Glitches and Issues
