@@ -9,7 +9,7 @@ A lightweight managing package to save custom prefix in db. Intelligent saving w
 You can download it from npm:
 ```cli
 npm i mongodb-prefix
-npm i mongoose
+npm i mongoose  // when u did not installed it
 ```
 
 # Setting Up
@@ -70,7 +70,7 @@ client.once('ready', () => {
     console.log('Ready!');
 });
 
-client.on('message', message => {
+client.on('message', async message => {
     if (message.author.bot) return;
 //add this
   const fetchprefix = await mongopref.fetch(client, message.guild.id);
@@ -87,7 +87,7 @@ message.channel.send(`**Successfully change prefix from ${fetchprefix.prefix} to
 if(command === "prefix"){
   if(!args[0]) return message.channel.send(`This Servers prefix is ${fetchprefix.prefix}`)
    const otherprefix = await mongopref.fetch(client, args[0]);
-   return message.channel.send(`The Server(${args[0]}) prefix is` + " `" + otherprefix.prefix} + " .`")
+   return message.channel.send(`The Server(${args[0]}) prefix is` + " `" + otherprefix.prefix + " .`")
 }
 if(command === "prefixstats"){
 var all = mongopref.fetchall(client);
