@@ -1,5 +1,5 @@
-<p align="center"><a href="https://nodei.co/npm/mongodb-prefix/"><img src="https://nodei.co/npm/mongodb-prefix.png"></a></p>
-<p align="center"><img src="https://img.shields.io/npm/v/mongodb-prefix"> <img src="https://img.shields.io/github/repo-size/meister03/discord-xp"> <img src="https://img.shields.io/npm/l/discord-xp"> <img src="https://img.shields.io/github/contributors/discord-mongodb-prefix">  <a href="https://discord.gg/YTdNBHh"><img src="https://discordapp.com/api/guilds/697129454761410600/widget.png" alt="Discord server"/></a></p>
+<p align="center"><a href="https://nodei.co/npm/discord-mongodb-prefix/"><img src="https://nodei.co/npm/discord-mongodb-prefix.png"></a></p>
+<p align="center"><img src="https://img.shields.io/npm/v/discord-mongodb-prefix"> <img src="https://img.shields.io/github/repo-size/meister03/disord-mongodb-prefix"> <img src="https://img.shields.io/npm/l/discord-mongodb-prefix"> <img src="https://img.shields.io/github/contributors/discord-mongodb-prefix">  <a href="https://discord.gg/YTdNBHh"><img src="https://discordapp.com/api/guilds/697129454761410600/widget.png" alt="Discord server"/></a></p>
 
 # Discord-Mongodb-Prefix
 A lightweight managing package to save custom prefix in db. Intelligent saving ways to lower traffic up to 90%.
@@ -8,14 +8,14 @@ A lightweight managing package to save custom prefix in db. Intelligent saving w
 # Download
 You can download it from npm:
 ```cli
-npm i mongodb-prefix
+npm i discord-mongodb-prefix
 npm i mongoose  // when u did not installed it
 ```
 
 # Setting Up
 First we include the module into the project (into your main bot file).
 ```js
-const mongopref = require("mongodb-prefix");
+const mongopref = require("discord-mongodb-prefix");
 client.prefix = new Map();  // do not rename here something, or else Dx
 ```
 After that, you have to provide a valid mongodb url and set the default prefix.
@@ -59,7 +59,7 @@ const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 const client = new Discord.Client();
 ///////Add this
-const mongopref = require("mongodb-prefix");
+const mongopref = require("discord-mongodb-prefix");
 client.prefix = new Map(); 
 
 mongopref.setURL("mongodb://..."); //builts a connection with the db
@@ -82,20 +82,21 @@ const command = args.shift().toLowerCase();
 if(command === "changeprefix"){ /// you can use your command handler to, but look that you overgive the parameters client, message
 let newprefix = args[0]; // the provided argument. Ex: !changeprefix <newprefix>
 await mongopref.changeprefix(client, message.guild.id, newprefix); // this will save the new prefix in the map and in the db to prevent multipy fetches
-message.channel.send(`**Successfully change prefix from ${fetchprefix.prefix} to ${newprefix}**`)
+message.channel.send(`**Successfully change prefix from "${fetchprefix.prefix}" to "${newprefix}"**`)
 }
 if(command === "prefix"){
-  if(!args[0]) return message.channel.send(`This Servers prefix is ${fetchprefix.prefix}`)
+  if(!args[0]) return message.channel.send(`This Servers prefix is ` +"`" + fetchprefix.prefix+ "`")
    const otherprefix = await mongopref.fetch(client, args[0]);
    return message.channel.send(`The Server(${args[0]}) prefix is` + " `" + otherprefix.prefix + " .`")
 }
 if(command === "prefixstats"){
-var all = mongopref.fetchall(client);
+var all = await mongopref.fetchall();
 const stats = new Discord.MessageEmbed()
 .setTitle("Prefix stats")
-.addField("Prefix saved on Map:" , client.prefix.length + " prefix saved.")
-.addField("Different Prefix:", Object.keys(all).length + " have a another prefix.")
-.addField("Servers with default prefix:" , Number(client.guilds.cache.size-Object.keys(all).length) + " are not saved in db.")
+.addField("Prefix saved on Map:" , "```" + client.prefix.size + " prefix saved" + "```")
+.addField("Different Prefix:","```" + Object.keys(all).length + " Servers have a another prefix"+ "```")
+.addField("Servers with default prefix:" ,"```" + Number(client.guilds.cache.size-Object.keys(all).length) + " Servers are not saved in db"+ "```")
+.setColor("YELLOW")
 return message.channel.send(stats)
 } 
 });

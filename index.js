@@ -123,8 +123,8 @@ class mongoprefix {
   }
 
  static async fetchall() {
-   var guilds = await serverset.find()
-  return guilds
+   var guilds = await serverset.find({}).sort([['guildID', 'descending']]).exec();
+  return guilds;
   }
 
 }
