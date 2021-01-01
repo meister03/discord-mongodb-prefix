@@ -40,14 +40,8 @@ client.on("message", async (message) => {
 
 *The Code below will split the given prefix from the message*
 ```js
-  const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');   //// the bot will react to on mention prefix 
-  //// and will check with a regex if the fetched prefix is on the message
-	const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(fetchprefix.prefix)})\\s*`);
-	if (!prefixRegex.test(message.content) || message.author.bot) return;    
-	const [, matchedPrefix] = message.content.match(prefixRegex);  
-	
-  const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
-  const command = args.shift().toLowerCase();
+const args = message.content.slice(fetchprefix.prefix.length).trim().split(/ +/);
+const command = args.shift().toLowerCase();
 ```
 # Change prefix
 
@@ -60,7 +54,52 @@ message.channel.send(`**Successfully change prefix from ${fetchprefix.prefix} to
 ```
 # Whole code
 ```js
-Whole code
+  
+const Discord = require('discord.js');
+const { prefix, token } = require('./config.json');
+const client = new Discord.Client();
+///////Add this
+const mongopref = require("mongodb-prefix");
+client.prefix = new Map(); 
+
+mongopref.setURL("mongodb://..."); //builts a connection with the db
+client.defaultprefix = prefix ; // save here your default prefix
+//// Add this
+
+client.once('ready', () => {
+    console.log('Ready!');
+});
+
+client.on('message', message => {
+    if (message.author.bot) return;
+//add this
+  const fetchprefix = await mongopref.fetch(client, message.guild.id);
+  console.log(fetchprefix.prefix)
+/// add this
+const args = message.content.slice(fetchprefix.prefix.length).trim().split(/ +/);
+const command = args.shift().toLowerCase();
+
+if(command === "changeprefix"){ /// you can use your command handler to, but look that you overgive the parameters client, message
+let newprefix = args[0]; // the provided argument. Ex: !changeprefix <newprefix>
+await mongopref.changeprefix(client, message.guild.id, newprefix); // this will save the new prefix in the map and in the db to prevent multipy fetches
+message.channel.send(`**Successfully change prefix from ${fetchprefix.prefix} to ${newprefix}**`)
+}
+if(command === "prefix"){
+  if(!args[0]) return message.channel.send(`This Servers prefix is ${fetchprefix.prefix}`)
+   const otherprefix = await mongopref.fetch(client, args[0]);
+   return message.channel.send(`The Server(${args[0]}) prefix is` + " `" + otherprefix.prefix} + " .`")
+}
+if(command === "prefixstats"){
+var all = mongopref.fetchall(client);
+const stats = new Discord.MessageEmbed()
+.setTitle("Prefix stats")
+.addField("Prefix saved on Map:" , client.prefix.length + " prefix saved.")
+.addField("Different Prefix:", Object.keys(all).length + " have a another prefix.")
+.addField("Servers with default prefix:" , Number(client.guilds.cache.size-Object.keys(all).length) + " are not saved in db.")
+return message.channel.send(stats)
+} 
+});
+client.login(token);
 ```
 
 *Is time for you to use the code creative..*
@@ -81,7 +120,14 @@ mongopref.deleteGuild(message.guild.id); /// you can also give a another guild i
 # For Advanced Coders
 **This code will use the mention prefix of the bot or the custom prefix**
 ```js
-Cide
+  const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');   //// the bot will react to on mention prefix 
+  //// and will check with a regex if the fetched prefix is on the message
+	const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(fetchprefix.prefix)})\\s*`);
+	if (!prefixRegex.test(message.content) || message.author.bot) return;    
+	const [, matchedPrefix] = message.content.match(prefixRegex);  
+	
+  const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
+  const command = args.shift().toLowerCase();
 ```
 **Have fun and feel free to contribute/suggest or contact me on my discord server or per dm on Meister#9667**
 
