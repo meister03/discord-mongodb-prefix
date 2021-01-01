@@ -40,6 +40,7 @@ client.on("message", async (message) => {
 
 *The Code below will split the given prefix from the message*
 ```js
+if (!message.content.startsWith(fetchprefix.prefix)) return;
 const args = message.content.slice(fetchprefix.prefix.length).trim().split(/ +/);
 const command = args.shift().toLowerCase();
 ```
@@ -76,6 +77,7 @@ client.on('message', async message => {
   const fetchprefix = await mongopref.fetch(client, message.guild.id);
   console.log(fetchprefix.prefix)
 /// add this
+if (!message.content.startsWith(fetchprefix.prefix)) return;
 const args = message.content.slice(fetchprefix.prefix.length).trim().split(/ +/);
 const command = args.shift().toLowerCase();
 

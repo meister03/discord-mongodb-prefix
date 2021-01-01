@@ -1,6 +1,6 @@
 {
   "name": "discord-mongodb-prefix",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "A lightweight and easy to use db managing package to save prefixes",
   "main": "index.js",
   "dependencies": {
