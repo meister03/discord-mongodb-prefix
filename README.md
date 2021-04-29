@@ -9,7 +9,6 @@ A lightweight managing package to save custom prefix in db. Intelligent saving w
 You can download it from npm:
 ```cli
 npm i discord-mongodb-prefix
-npm i mongoose  // when u did not installed it
 ```
 
 # Setting Up

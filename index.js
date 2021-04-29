@@ -136,6 +136,7 @@ static async fetchGuild(guildId) {
 */
 static async update(guild) {
   if (!guild) throw new TypeError("A mongoose guild object was not provided!");
+  guild.markModified('data');
   await guild.save().catch(e => console.log(`Failed to update guild: ${e}`));
   return guild;
 }
