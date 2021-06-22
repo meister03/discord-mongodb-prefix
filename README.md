@@ -4,7 +4,7 @@
 # Discord-Mongodb-Prefix
 A lightweight managing package to save custom prefix in db. Intelligent saving ways to lower traffic up to 90%.
 
-**If you need help feel free to join our <a href="https://discord.gg/YTdNBHh ">discord server</a>. We will provied you all help ☺**
+**If you need help feel free to join our <a href="https://discord.gg/YTdNBHh ">discord server</a>. We will provide you all help ☺**
 # Download
 You can download it from npm:
 ```cli
@@ -15,12 +15,11 @@ npm i discord-mongodb-prefix
 First we include the module into the project (into your main bot file).
 ```js
 const mongopref = require("discord-mongodb-prefix");
-client.prefix = new Map();  // do not rename here something, or else Dx
 ```
 After that, you have to provide a valid mongodb url and set the default prefix.
 ```js
 mongopref.setURL("mongodb://..."); //builts a connection with the db
-client.defaultprefix = "Your default Prefix" ; // save here your default prefix
+mongopref.setDefaultPrefix("Your default Prefix") ; // Set here your default prefix
 ```
 
 # Fetching the Prefix
@@ -32,7 +31,7 @@ client.on("message", async (message) => {
   if (!message.guild) return;
   if (message.author.bot) return;
   
-  const fetchprefix = await mongopref.fetch(client, message.guild.id);
+  const fetchprefix = await mongopref.fetch(message.guild.id);
   console.log(fetchprefix.prefix) /// will log out the prefix
 .........
 ```
@@ -42,14 +41,15 @@ client.on("message", async (message) => {
 if (!message.content.startsWith(fetchprefix.prefix)) return;
 const args = message.content.slice(fetchprefix.prefix.length).trim().split(/ +/);
 const command = args.shift().toLowerCase();
+console.log(command);
 ```
 # Change prefix
 
 ```js
-if(command === "changeprefix"){ /// you can use your command handler to, but look that you overgive the parameters client, message
-let newprefix = args[0]; // the provided argument. Ex: !changeprefix <newprefix>
-await mongopref.changeprefix(client, message.guild.id, newprefix); // this will save the new prefix in the map and in the db to prevent multipy fetches
-message.channel.send(`**Successfully change prefix from ${fetchprefix.prefix} to ${newprefix}**`)
+if(command === "changeprefix"){ /// you can use your command handler too...
+  let newprefix = args[0]; // the provided argument. Ex: !changeprefix <newprefix>
+  await mongopref.changeprefix(message.guild.id, newprefix); //saves the new prefix on the map
+  message.channel.send(`**Successfully changed prefix  to ${newprefix}**`)
 }
 ```
 # Whole code
@@ -60,11 +60,8 @@ const { prefix, token } = require('./config.json');
 const client = new Discord.Client();
 ///////Add this
 const mongopref = require("discord-mongodb-prefix");
-client.prefix = new Map(); 
-
 mongopref.setURL("mongodb://..."); //builts a connection with the db
-client.defaultprefix = prefix ; // save here your default prefix
-//// Add this
+mongopref.setDefaultPrefix(prefix); // set your default prefix
 
 client.once('ready', () => {
     console.log('Ready!');
@@ -72,34 +69,36 @@ client.once('ready', () => {
 
 client.on('message', async message => {
     if (message.author.bot) return;
+
 //add this
-  const fetchprefix = await mongopref.fetch(client, message.guild.id);
+  const fetchprefix = await mongopref.fetch(message.guild.id);
   console.log(fetchprefix.prefix)
 /// add this
-if (!message.content.startsWith(fetchprefix.prefix)) return;
-const args = message.content.slice(fetchprefix.prefix.length).trim().split(/ +/);
-const command = args.shift().toLowerCase();
 
-if(command === "changeprefix"){ /// you can use your command handler to, but look that you overgive the parameters client, message
-let newprefix = args[0]; // the provided argument. Ex: !changeprefix <newprefix>
-await mongopref.changeprefix(client, message.guild.id, newprefix); // this will save the new prefix in the map and in the db to prevent multipy fetches
-message.channel.send(`**Successfully change prefix from "${fetchprefix.prefix}" to "${newprefix}"**`)
-}
-if(command === "prefix"){
-  if(!args[0]) return message.channel.send(`This Servers prefix is ` +"`" + fetchprefix.prefix+ "`")
-   const otherprefix = await mongopref.fetch(client, args[0]);
-   return message.channel.send(`The Server(${args[0]}) prefix is` + " `" + otherprefix.prefix + " .`")
-}
-if(command === "prefixstats"){
-var all = await mongopref.fetchall();
-const stats = new Discord.MessageEmbed()
-.setTitle("Prefix stats")
-.addField("Prefix saved on Map:" , "```" + client.prefix.size + " prefix saved" + "```")
-.addField("Different Prefix:","```" + Object.keys(all).length + " Servers have a another prefix"+ "```")
-.addField("Servers with default prefix:" ,"```" + Number(client.guilds.cache.size-Object.keys(all).length) + " Servers are not saved in db"+ "```")
-.setColor("YELLOW")
-return message.channel.send(stats)
-} 
+  if (!message.content.startsWith(fetchprefix.prefix)) return;
+  const args = message.content.slice(fetchprefix.prefix.length).trim().split(/ +/);
+  const command = args.shift().toLowerCase();
+
+  if(command === "changeprefix"){ 
+    let newprefix = args[0]; // the provided argument. Ex: !changeprefix <newprefix>
+    await mongopref.changeprefix(message.guild.id, newprefix); 
+    return message.channel.send(`**Successfully change prefix from "${fetchprefix.prefix}" to "${newprefix}"**`)
+  }
+  if(command === "prefix"){ /// !prefix <guildid>
+    if(!args[0]) return message.channel.send(`This Servers prefix is ` +"`" + fetchprefix.prefix+ "`")
+    const otherprefix = await mongopref.fetch(args[0]);
+    return message.channel.send(`The Server(${args[0]}) prefix is` + " `" + otherprefix.prefix + " .`")
+  }
+  if(command === "prefixstats"){
+    const all = await mongopref.fetchall();
+    const stats = new Discord.MessageEmbed()
+    .setTitle("Prefix stats")
+    .addField("Prefix saved on Map:" , "```" + mongopref.prefix.size + " prefix saved" + "```")
+    .addField("Different Prefix:","```" + Object.keys(all).length + " Servers have a another prefix"+ "```")
+    .addField("Servers with default prefix:" ,"```" + Number(client.guilds.cache.size-Object.keys(all).length) + " Servers are not saved in db"+ "```")
+    .setColor("YELLOW")
+    return message.channel.send(stats)
+  } 
 });
 client.login(token);
 ```
@@ -111,7 +110,7 @@ client.login(token);
 
 Creates an entry in database for that Server if it doesnt exist.
 ```js
-mongopref.createGuild(client,message.guild.id); /// you can also give a another guild id
+mongopref.createGuild(message.guild.id); /// you can also give a another guild id
 ```
 **deleteServer**
 

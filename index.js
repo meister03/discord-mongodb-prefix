@@ -3,12 +3,25 @@ const serverset = require("./models/schemaserver.js");
 
 class mongoprefix {
 
+static defaultprefix = `!`; //The default Prefix
+
+static prefix = new Map();
+
 /**
+* Sets the default Prefix
+* @param {string} [defaultpref] - The default Prefix
+*/
+static setDefaultPrefix(defaultpref){
+  this.defaultprefix = (defaultpref || `!`);
+  return this.defaultprefix;
+}
+
+/**
+* Connects to the MongoDB Server
 * @param {string} [dbUrl] - A valid mongo database URI.
 */
 static async setURL(dbUrl) {
   if (!dbUrl) throw new TypeError("A database url was not provided.");
-  
   return mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -16,23 +29,28 @@ static async setURL(dbUrl) {
 }
 
 /**
-* @param {object} [client] - Discord client, will save the data in a Map to prevent multiple fetches
 * @param {string} [guildId] - Discord guild id.
 */
- static async createGuild(client, guildId) {
-    if(!client.prefix) throw new TypeError("Pls create a new Map on client.prefix || client.prefix = new Map()|| in your bot file");
-  	if (!client) throw new TypeError("An client was not provided.");
+ static async createGuild(guildId) {
     if (!guildId) throw new TypeError("A guild id was not provided.");
 
     const isguild = await serverset.findOne({guildID: guildId });
-    if (isguild) return false;
+    if (isguild){
+      this.prefix.set(guildId, { ///this saves the default prefix in a map
+        guild: guildId,
+        prefix: isguild.prefix
+      });
+      return isguild;
+    }
+    
     const newGuild = new serverset({
       guildID: guildId
     });
     await newGuild.save().catch(e => console.log(`Failed to create guild: ${e}`));
-    client.prefix.set(guildId, { ///this saves the default prefix in a map
+
+    this.prefix.set(guildId, { ///this saves the default prefix in a map
       guild: guildId,
-      prefix: client.defaultprefix
+      prefix: this.defaultprefix
     });
     return newGuild;
 }
@@ -44,71 +62,51 @@ static async deleteGuild(guildId) {
   if (!guildId) throw new TypeError("A guild id was not provided.");
   const guild = await serverset.findOne({guildID: guildId });
   if (!guild) return false;
-
   await serverset.findOneAndDelete({guildID: guildId }).catch(e => console.log(`Failed to delete guild: ${e}`));
-
   return guild;
 }
 
 /**
-* @param {object} [client] - Discord client, will save the data in a Map to prevent multiple fetches
 * @param {string} [guildId] - Discord guild id.
 * @param {prefix} [newprefix] - Amount of xp to append.
 */
-static async changeprefix(client, guildId , newprefix) {
-	if(!client.prefix) throw new TypeError("Pls create a new Map on client.prefix || client.prefix = new Map()|| in your bot file");
-  if (!client) throw new TypeError("An client was not provided.");
+static async changeprefix(guildId , newprefix) {
   if (!guildId) throw new TypeError("A guild id was not provided.");
   if (!newprefix) throw new TypeError("A newprefix was not provided.");
 
-  const guild = await serverset.findOne({guildID: guildId });
-  if (!guild) {
-    const newGuild = new serverset({
-      guildID: guildId,
-      prefix: newprefix,
-    });
-    await newGuild.save().catch(e => console.log(`Failed to save new Guild.`));
-    client.prefix.set(guildId, { ///this saves the default prefix in a map
-      guild: guildId,
-      prefix: newprefix
-    });
-    return;
-  };
+  const guild = await this.createGuild(guildId);
   guild.prefix = newprefix;
-
   await guild.save().catch(e => console.log(`Failed to save new prefix: ${e}`) );
-  client.prefix.set(guildId, { ///this saves the default prefix in a map
+
+  this.prefix.set(guildId, { 
       guild: guildId,
       prefix: newprefix
   });
-  return;
+  return guild;
 }
 
 /**
-* @param {object} [client] - Discord client, will save the data in a Map to prevent multiple fetches
 * @param {string} [guildId] - Discord guild id.
 */
-static async fetch(client, guildId) {
- 	if(!client.prefix) throw new TypeError("Pls create a new Map on client.prefix || client.prefix = new Map()|| in your bot file");
-  if (!client) throw new TypeError("An client was not provided.");
+static async fetch(guildId) {
   if (!guildId) throw new TypeError("A guild id was not provided.");
-  if(!client.prefix.has(guildId)){
-  const guild = await serverset.findOne({guildID: guildId });
-  if(!guild){ // checks if the guild exist, when not it will assign in the map the default prefix
-    client.prefix.set(guildId, { ///this saves the default prefix in a map
-      guild: guildId,
-      prefix: client.defaultprefix
-    });
-   return client.prefix.get(guildId);
+  
+  if(this.prefix.has(guildId)) return this.prefix.get(guildId)
+
+  const guild = await serverset.findOne({guildID: guildId});
+  if(!guild){ 
+      this.prefix.set(guildId, { 
+        guild: guildId,
+        prefix: this.defaultprefix
+      });
+      return {guild: guildId, prefix: this.defaultprefix};
   }
-  client.prefix.set(guildId, { ///this save the custom prefix in a map
+
+  this.prefix.set(guildId, { 
     guild: guildId,
-    prefix: guild.prefix  /// assigns the custom prefix
+    prefix: guild.prefix  
   });
-  return client.prefix.get(guildId);   /// returns the value
-  }else{ //when a value is already assigned in the map.It will return the value.
-    return client.prefix.get(guildId);  
-  }
+  return this.prefix.get(guildId);   
 }
 
 
@@ -118,6 +116,7 @@ static async fetchall() {
 }
 
 /**
+* Function for fetching Guild, which does not saves the prefix in the map;
 * @param {string} [guildId] - Discord guild id.
 */
 static async fetchGuild(guildId) {
@@ -131,16 +130,5 @@ static async fetchGuild(guildId) {
     return newGuild;
 }
 
-/**
-* @param {Object} [guild] - A mongoose object
-*/
-static async update(guild) {
-  if (!guild) throw new TypeError("A mongoose guild object was not provided!");
-  guild.markModified('data');
-  await guild.save().catch(e => console.log(`Failed to update guild: ${e}`));
-  return guild;
 }
-}
-
-
 module.exports = mongoprefix;
